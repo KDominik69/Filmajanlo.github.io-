@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Ajánló</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        #container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #search-form {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+
+        #search-form select, #search-form button {
+            margin-right: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #movie-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+
+        .movie-item {
+            position: relative;
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .movie-item:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-item img {
+            width: 100%;
+            height: auto;
+        }
+
+        .movie-item .info {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .movie-item .info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .movie-item .info p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .movie-item:hover .trailer {
+            display: block;
+        }
+
+        .trailer {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #pagination button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            font-size: 16px;
+        }
+
+        #pagination span {
+            font-size: 18px;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- Keresés és műfaj kiválasztása -->
+        <form id="search-form">
+            <select id="genre">
+                <option value="all">Összes műfaj</option>
+                <option value="action">Akciófilm</option>
+                <option value="animation">Animációs film</option>
+                <option value="anime">Anime</option>
+                <option value="crime">Bűnügyi film</option>
+                <option value="fantasy">Fantasztikus film</option>
+                <option value="newsreel">Filmhíradó</option>
+                <option value="musical">Filmmusical</option>
+                <option value="series">Filmsorozat</option>
+                <option value="war">Háborús film</option>
+                <option value="horror">Horrorfilm</option>
+                <option value="adventure">Kalandfilm</option>
+                <option value="disaster">Katasztrófafilm</option>
+                <option value="propaganda">Propagandafilm</option>
+                <option value="commercial">Reklámfilm</option>
+                <option value="thriller">Thriller</option>
+                <option value="historical">Történelmi film</option>
+                <option value="sci-fi">Tudományos-fantasztikus film</option>
+                <option value="comedy">Vígjáték</option>
+                <option value="western">Western</option>
+                <option value="musical-film">Zenés film</option>
+            </select>
+            <button type="submit">Film keresése</button>
+        </form>
+
+        <!-- Filmek konténere, amelyben 150 film jelenik meg egyszerre -->
+        <div id="movie-grid"></div>
+
+        <!-- Lapozó gombok -->
+        <div id="pagination">
+            <button id="prev-page">Előző</button>
+            <span id="current-page">1</span>
+            <button id="next-page">Következő</button>
+        </div>
+    </div>
+
+    <script>
+        const movieGrid = document.getElementById('movie-grid');
+        const pagination = document.getElementById('pagination');
+        const currentPageElement = document.getElementById('current-page');
+        let currentPage = 1;
+        const moviesPerPage = 150;
+
+        // Generált filmek adatai (példaadatok, valós adatokkal helyettesíthetők)
+        const movies = Array.from({ length: 150 }, (_, i) => ({
+            title: `Film ${i + 1}`,
+            genre: ['action', 'animation', 'anime', 'crime', 'fantasy', 'newsreel', 'musical', 'series', 'war', 'horror', 'adventure', 'disaster', 'propaganda', 'commercial', 'thriller', 'historical', 'sci-fi', 'comedy', 'western', 'musical-film'][Math.floor(Math.random() * 20)],
+            ageRating: `${Math.floor(Math.random() * 18) + 3}+`,
+            actors: ['John Doe', 'Jane Smith'],
+            poster: `https://via.placeholder.com/150x220.png?text=Film+${i + 1}`,
+            trailer: 'https://via.placeholder.com/150x220.png?text=Trailer'
+        }));
+
+        function loadMovies(page = 1) {
+            movieGrid.innerHTML = '';
+            const startIndex = (page - 1) * moviesPerPage;
+            const endIndex = startIndex + moviesPerPage;
+            const moviesToShow = movies.slice(startIndex, endIndex);
+
+            moviesToShow.forEach(movie => {
+                const movieElement = document.createElement('div');
+                movieElement.classList.add('movie-item');
+                
+                movieElement.innerHTML = `
+                    <img src="${movie.poster}" alt="${movie.title}">
+                    <div class="info">
+                        <h3>${movie.title}</h3>
+                        <p>Korhatár: ${movie.ageRating}</p>
+                        <p>Szereplők: ${movie.actors.join(', ')}</p>
+                    </div>
+                    <video class="trailer" src="${movie.trailer}" muted></video>
+                `;
+
+                movieElement.addEventListener('mouseenter', () => {
+                    const trailer = movieElement.querySelector('.trailer');
+                    trailer.play();
+                });
+
+                movieElement.addEventListener('mouseleave', () => {
+                    const trailer = movieElement.querySelector('.trailer');
+                    trailer.pause();
+                    trailer.currentTime = 0;
+                });
+
+                movieGrid.appendChild(movieElement);
+            });
+        }
+
+        // Lapozás
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadMovies(currentPage);
+                currentPageElement.textContent = currentPage;
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            if (currentPage < Math.ceil(movies.length / moviesPerPage)) {
+                currentPage++;
+                loadMovies(currentPage);
+                currentPageElement.textContent = currentPage;
+            }
+        });
+
+        // Első betöltés
+        loadMovies();
+    </script>
+</body>
+</html>
