@@ -1,219 +1,338 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Ajánló</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filmkereső</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    :root {
+      --szin1: rgba(235, 229, 226, 1);
+      --szin2: rgba(19, 104, 140, 1);
+      --szin3: rgba(0, 0, 0, 1);
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
+    html, body {
+      height: 100%;
+    }
 
-        #container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    body {
+      background: var(--szin3) !important;
+      padding-top: 70px; 
+    }
 
-        #search-form {
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 20px;
-        }
+    nav {
+      background: rgba(2, 59, 0, 0.66);
+    }
 
-        #search-form select, #search-form button {
-            margin-right: 10px;
-            padding: 10px;
-            font-size: 16px;
-        }
+    nav a {
+      color: rgba(235, 229, 226, 1);
+      font-size: 2.5rem !important;
+    }
+    #elozo{
+      margin: 0.5rem;
+      background-color: rgba(0, 0, 0, 0.719);
+      color: rgb(255, 0, 0);
+    }
 
-        #movie-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-        }
+    #kovetkezo{
+      margin: 0.5rem;
+      margin-left: 2rem;
+      background-color: rgba(0, 0, 0, 0.719);
+      color: rgb(255, 0, 0);
+    }
 
-        .movie-item {
-            position: relative;
-            background-color: #fff;
-            padding: 15px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
+    .film-kartya {
+      box-shadow: 0 10px 15px rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background:  rgba(0, 0, 0, 1);
+      padding: 4px;
+      border-radius: 1rem;
+    }
 
-        .movie-item:hover {
-            transform: scale(1.05);
-        }
+    .film-leiras {
+      background: var(--szin2);
+      width: 370px;
+      text-align: center;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
 
-        .movie-item img {
-            width: 100%;
-            height: auto;
-        }
+    .film-cim {
+      color: var(--szin1);
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
 
-        .movie-item .info {
-            margin-top: 10px;
-            text-align: center;
-        }
+    .film-kep {
+      border-radius: 0.5rem;
+      max-height: 550px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
 
-        .movie-item .info h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
+    .film-kep:hover {
+      transform: scale(1.05);
+      box-shadow: 0 25px 30px rgba(255, 0, 0, 0.3); 
+    }
 
-        .movie-item .info p {
-            font-size: 14px;
-            color: #666;
-        }
+    .film-tarolo {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-        .movie-item:hover .trailer {
-            display: block;
-        }
+    .film-tarolo .film-kartya {
+      flex: 1 0 22%; 
+      margin: 10px;
+    }
 
-        .trailer {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
+    .lapozas {
+      margin-top: 20px;
+    }
 
-        #pagination {
-            margin-top: 20px;
-            text-align: center;
-        }
+    .szures-forma {
+      margin-bottom: 20px;
+    }
 
-        #pagination button {
-            padding: 10px 20px;
-            margin: 0 5px;
-            font-size: 16px;
-        }
+    .film-info {
+      margin-left: 10px;
+    }
 
-        #pagination span {
-            font-size: 18px;
-            margin: 0 10px;
-        }
-    </style>
+    .film-kartya p {
+      color: rgba(235, 229, 226, 1);
+      margin: 0;
+    }
+
+    .szereplok-lista {
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+
+  </style>
 </head>
 <body>
-    <div id="container">
-        <!-- Keresés és műfaj kiválasztása -->
-        <form id="search-form">
-            <select id="genre">
-                <option value="all">Összes műfaj</option>
-                <option value="action">Akciófilm</option>
-                <option value="animation">Animációs film</option>
-                <option value="anime">Anime</option>
-                <option value="crime">Bűnügyi film</option>
-                <option value="fantasy">Fantasztikus film</option>
-                <option value="newsreel">Filmhíradó</option>
-                <option value="musical">Filmmusical</option>
-                <option value="series">Filmsorozat</option>
-                <option value="war">Háborús film</option>
-                <option value="horror">Horrorfilm</option>
-                <option value="adventure">Kalandfilm</option>
-                <option value="disaster">Katasztrófafilm</option>
-                <option value="propaganda">Propagandafilm</option>
-                <option value="commercial">Reklámfilm</option>
-                <option value="thriller">Thriller</option>
-                <option value="historical">Történelmi film</option>
-                <option value="sci-fi">Tudományos-fantasztikus film</option>
-                <option value="comedy">Vígjáték</option>
-                <option value="western">Western</option>
-                <option value="musical-film">Zenés film</option>
-            </select>
-            <button type="submit">Film keresése</button>
-        </form>
+  
+  <nav class="fixed-top d-flex justify-content-center navbar p-2">
+    
+    <a href="index.html" class="p-0 navbar-brand d-none d-lg-block">Filmkereső</a>
+    <form id="kereso-forma" class="form-inline">
+      <input
+        id="kereses"
+        class="form-control mr-sm-2"
+        type="search"
+        placeholder="Keresés"
+        aria-label="Keresés"
+      />
+      <select id="mu-faj-valaszto" class="form-control ml-sm-2">
+        <option value="">Válasszon műfajt</option>
+        <option value="28">Akció</option>
+        <option value="16">Animáció</option>
+        <option value="99">Dokumentumfilm</option>
+        <option value="18">Dráma</option>
+        <option value="10751">Családi</option>
+        <option value="14">Fantasy</option>
+        <option value="36">Történelmi</option>
+        <option value="27">Horror</option>
+        <option value="10402">Zenei</option>
+        <option value="9648">Misztikus</option>
+        <option value="10749">Romantikus</option>
+        <option value="878">Sci-fi</option>
+        <option value="10770">TV-film</option>
+        <option value="53">Thriller</option>
+        <option value="10752">Háborús</option>
+        <option value="37">Western</option>
+      </select>
+      <button type="submit" class="btn btn-primary ml-sm-2">Keresés</button>
+    </form>
+  </nav>
 
-        <!-- Filmek konténere, amelyben 150 film jelenik meg egyszerre -->
-        <div id="movie-grid"></div>
-
-        <!-- Lapozó gombok -->
-        <div id="pagination">
-            <button id="prev-page">Előző</button>
-            <span id="current-page">1</span>
-            <button id="next-page">Következő</button>
-        </div>
+  <section>
+    <div class="container-fluid mt-5 p-5">
+      <div id="film-tartalom" class="film-tarolo">
+      </div>
     </div>
+  </section>
 
-    <script>
-        const movieGrid = document.getElementById('movie-grid');
-        const pagination = document.getElementById('pagination');
-        const currentPageElement = document.getElementById('current-page');
-        let currentPage = 1;
-        const moviesPerPage = 150;
+  <nav aria-label="Oldal navigáció">
+    <ul class="pagination justify-content-center">
+      <li class="page-item">
+        <a id="elozo" class="btn page-link" tabindex="-1">Előző</a>
+      </li>
+      <li class="page-item">
+        <a id="kovetkezo" class="btn page-link">Következő</a>
+      </li>
+    </ul>
+  </nav>
 
-        // Generált filmek adatai (példaadatok, valós adatokkal helyettesíthetők)
-        const movies = Array.from({ length: 150 }, (_, i) => ({
-            title: `Film ${i + 1}`,
-            genre: ['action', 'animation', 'anime', 'crime', 'fantasy', 'newsreel', 'musical', 'series', 'war', 'horror', 'adventure', 'disaster', 'propaganda', 'commercial', 'thriller', 'historical', 'sci-fi', 'comedy', 'western', 'musical-film'][Math.floor(Math.random() * 20)],
-            ageRating: `${Math.floor(Math.random() * 18) + 3}+`,
-            actors: ['John Doe', 'Jane Smith'],
-            poster: `https://via.placeholder.com/150x220.png?text=Film+${i + 1}`,
-            trailer: 'https://via.placeholder.com/150x220.png?text=Trailer'
-        }));
+  <script>
+    const API_KEY = "249f222afb1002186f4d88b2b5418b55";
+    const API_KERES = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=hu-HU&query=`;
+    const API_FEDEZ = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=hu-HU&sort_by=popularity.desc&page=`;
+    const API_SZEREPLOK = `https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key=${API_KEY}&language=hu-HU`;
+    const API_MUFJOK = `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=hu-HU`;
 
-        function loadMovies(page = 1) {
-            movieGrid.innerHTML = '';
-            const startIndex = (page - 1) * moviesPerPage;
-            const endIndex = startIndex + moviesPerPage;
-            const moviesToShow = movies.slice(startIndex, endIndex);
+    const KEP_UTVONAL = "https://image.tmdb.org/t/p/w500";
+    let oldal = localStorage.getItem('oldal') || 1;
+    let mufaj = localStorage.getItem('mufaj') || '';
 
-            moviesToShow.forEach(movie => {
-                const movieElement = document.createElement('div');
-                movieElement.classList.add('movie-item');
-                
-                movieElement.innerHTML = `
-                    <img src="${movie.poster}" alt="${movie.title}">
-                    <div class="info">
-                        <h3>${movie.title}</h3>
-                        <p>Korhatár: ${movie.ageRating}</p>
-                        <p>Szereplők: ${movie.actors.join(', ')}</p>
-                    </div>
-                    <video class="trailer" src="${movie.trailer}" muted></video>
-                `;
+    const foTartalom = document.getElementById("film-tartalom");
+    const forma = document.getElementById("kereso-forma");
+    const kereses = document.getElementById("kereses");
+    const mufajValaszto = document.getElementById("mu-faj-valaszto");
+    const oldalLinkek = document.querySelectorAll(".page-link");
 
-                movieElement.addEventListener('mouseenter', () => {
-                    const trailer = movieElement.querySelector('.trailer');
-                    trailer.play();
-                });
+    mufajValaszto.value = mufaj;
 
-                movieElement.addEventListener('mouseleave', () => {
-                    const trailer = movieElement.querySelector('.trailer');
-                    trailer.pause();
-                    trailer.currentTime = 0;
-                });
+    getFilmek(`${API_FEDEZ}${oldal}&with_genres=${mufaj}`);
 
-                movieGrid.appendChild(movieElement);
-            });
+    oldalLinkek.forEach((oldalLink) => {
+      oldalLink.addEventListener("click", () => {
+        if (oldalLink.id === "kovetkezo") {
+          oldal++;
+          localStorage.setItem('oldal', oldal);
+          getFilmek(`${API_FEDEZ}${oldal}&with_genres=${mufaj}`);
         }
+        if (oldalLink.id === "elozo" && oldal > 1) {
+          oldal--;
+          localStorage.setItem('oldal', oldal);
+          getFilmek(`${API_FEDEZ}${oldal}&with_genres=${mufaj}`);
+        }
+      
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
 
-        // Lapozás
-        document.getElementById('prev-page').addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                loadMovies(currentPage);
-                currentPageElement.textContent = currentPage;
-            }
+    forma.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const query = kereses.value;
+      mufaj = mufajValaszto.value;
+      localStorage.setItem('mufaj', mufaj);
+      let url = `${API_FEDEZ}${oldal}&with_genres=${mufaj}`;
+      if (query) {
+        url = API_KERES + query;
+      }
+      getFilmek(url);
+    });
+
+    async function getFilmek(url) {
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        const respData = await resp.json();
+        mutasdFilmeket(respData.results);
+      } catch (error) {
+        console.error('Hiba történt az adatok lekérésekor:', error);
+      }
+    }
+
+    async function getSzereplok(filmId) {
+      try {
+        const resp = await fetch(API_SZEREPLOK.replace("{movie_id}", filmId));
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        const respData = await resp.json();
+        return respData.cast;
+      } catch (error) {
+        console.error('Hiba történt a szereplők lekérésekor:', error);
+        return [];
+      }
+    }
+
+    async function getFilmReszletek(filmId) {
+      try {
+        const resp = await fetch(`https://api.themoviedb.org/3/movie/${filmId}?api_key=${API_KEY}&language=hu-HU`);
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        const respData = await resp.json();
+        return respData;
+      } catch (error) {
+        console.error('Hiba történt a film részleteinek lekérésekor:', error);
+        return {};
+      }
+    }
+
+    async function getFilmBesorolas(filmId) {
+      try {
+        const resp = await fetch(`https://api.themoviedb.org/3/movie/${filmId}/release_dates?api_key=${API_KEY}`);
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        const respData = await resp.json();
+        const huRelease = respData.results.find(release => release.iso_3166_1 === 'HU');
+        if (huRelease) {
+          return huRelease.release_dates[0].certification;
+        }
+        return null;
+      } catch (error) {
+        console.error('Hiba történt a besorolás lekérésekor:', error);
+        return null;
+      }
+    }
+
+    async function getElozetes(filmId) {
+      try {
+        const resp = await fetch(`https://api.themoviedb.org/3/movie/${filmId}/videos?api_key=${API_KEY}&language=hu-HU`);
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        const respData = await resp.json();
+        
+        const trailer = respData.results.find(video => video.type === "Trailer" && video.site === "YouTube");
+
+        if (trailer) {
+          return `https://www.youtube.com/watch?v=${trailer.key}`;
+        } else {
+          return null;
+        }
+      } catch (error) {
+        console.error('Hiba történt az előzetes lekérésekor:', error);
+        return null;
+      }
+    }
+
+    async function mutasdFilmeket(filmek) {
+      foTartalom.innerHTML = "";
+      filmek.forEach(async (film) => {
+        const filmDiv = document.createElement("div");
+        filmDiv.classList.add("film-kartya");
+
+        const filmBesorolas = await getFilmBesorolas(film.id);
+        const szereplok = await getSzereplok(film.id);
+        const elozoLink = await getElozetes(film.id);
+
+        filmDiv.innerHTML = `
+          <img class="film-kep" src="${KEP_UTVONAL + film.poster_path}" alt="${film.title}" />
+          <div class="film-leiras">
+            <p class="film-cim">${film.title}</p>
+            <div class="film-info">
+              <p class="film-szavazat">⭐ ${film.vote_average}</p>
+              <p class="besorolas">Korhatár: ${filmBesorolas ? filmBesorolas : 'Nem található'}</p>
+              <div class="szereplok-lista">Szereplők: ${szereplok.slice(0, 5).map(actor => actor.name).join(', ')}</div>
+            </div>
+          </div>
+        `;
+
+        filmDiv.querySelector(".film-kep").addEventListener("click", () => {
+          if (elozoLink) {
+            window.open(elozoLink, '_blank');
+          } else {
+            alert('Előzetes nem elérhető.');
+          }
         });
 
-        document.getElementById('next-page').addEventListener('click', () => {
-            if (currentPage < Math.ceil(movies.length / moviesPerPage)) {
-                currentPage++;
-                loadMovies(currentPage);
-                currentPageElement.textContent = currentPage;
-            }
-        });
-
-        // Első betöltés
-        loadMovies();
-    </script>
+        foTartalom.appendChild(filmDiv);
+      });
+    }
+  </script>
 </body>
 </html>
